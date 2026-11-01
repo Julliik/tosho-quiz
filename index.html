@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Візуалізація свята · ТОШО!?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Дев’ять питань, і ви побачите формат і ціну свята для підлітка. Візуалізацію надішлемо в месенджер.">
+<meta name="theme-color" content="#121212">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Побачте свято до того, як воно почнеться · ТОШО!?">
+<meta property="og:description" content="Свята для підлітків від 10 років у Києві. Пройдіть квіз і отримайте візуалізацію свята.">
+<meta property="og:image" content="img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@600;800&display=swap">
+<style>
+/* Один темний світ бренду: телефонна колонка до 480 px, фото-плитки, наліпки, золото для цін */
+:root{
+  --page:#0B0B0B; --bg:#121212; --card:#1B1B1B; --fg:#FFF9F8;
+  --muted:rgba(255,249,248,.74); --soft:rgba(255,249,248,.58); --line:rgba(255,249,248,.16);
+  --gold:#C5A880; --pink:#F8A4B8; --ink:#121212;
+  --display:'Unbounded','Arial Black',system-ui,sans-serif;
+  --text:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--page)}
+body{margin:0;color:var(--fg);font-family:var(--text);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+img{max-width:100%;display:block}
+.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg);display:flex;flex-direction:column}
+@media (min-width:520px){.app{border-left:1px solid #222;border-right:1px solid #222}}
+#screen{flex:1;display:flex;flex-direction:column;transition:opacity .2s ease}
+#view.fade{opacity:0}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);height:56px;display:flex;align-items:center;gap:10px;padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.back{width:44px;height:44px;flex:none;border:0;border-radius:12px;background:transparent;color:var(--fg);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bar{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
+.bar i{height:4px;border-radius:2px;background:rgba(255,249,248,.15)}
+.bar i.on{background:var(--gold)}
+.count{min-width:30px;text-align:right;font:600 12px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.toptitle{flex:1;text-align:center;font-size:13px;color:var(--soft)}
+.sp44{width:44px;flex:none}
+.body{flex:1;display:flex;flex-direction:column;gap:14px;padding-block:20px 28px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2{margin:0;font-family:var(--display);font-weight:800;text-transform:uppercase;text-wrap:balance}
+h1{font-size:clamp(24px,7.4vw,30px);line-height:1.1}
+h2{font-size:22px;line-height:1.18}
+h1:focus,h2:focus{outline:none}
+.gold{color:var(--gold)}
+.lead{margin:0;font-size:15px;line-height:1.5;color:var(--muted);max-width:65ch}
+.hint{margin:-6px 0 2px;font-size:13px;color:var(--muted)}
+.small{margin:0;font-size:13px;line-height:1.45;color:var(--soft)}
+.center{text-align:center}
+.spacer{flex:1;min-height:8px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* Відповіді */
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;flex-direction:column;gap:4px;width:100%;min-height:60px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--fg);font:inherit;text-align:left;cursor:pointer;transition:border-color .15s ease,transform .15s ease}
+.opt:hover{border-color:rgba(255,249,248,.42)}
+.opt:active{transform:scale(.99)}
+.opt[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.opt .t{font:600 15px/1.25 var(--display)}
+.opt .s{font-size:13px;line-height:1.4;color:var(--muted)}
+.opt.dash{border:1px solid rgba(248,164,184,.6);background:transparent}
+
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{position:relative;aspect-ratio:17/15;max-width:100%;padding:8px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;color:var(--fg);font:inherit;text-align:left;cursor:pointer;transition:transform .15s ease}
+.tile:active{transform:scale(.98)}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tile .plate{position:relative;display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:10px;background:rgba(18,18,18,.86)}
+.tile .t{font:600 14px/1.2 var(--display)}
+.tile .s{font-size:11.5px;line-height:1.3;color:rgba(255,249,248,.82)}
+.tile[aria-pressed="true"]{border:3px solid var(--fg);padding:6px}
+.tile .check{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--pink);display:none;align-items:center;justify-content:center}
+.tile[aria-pressed="true"] .check{display:flex}
+.tile.wide{grid-column:1/-1;aspect-ratio:auto;min-height:64px}
+.mkline{margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
+.tile.dash{border:1px solid rgba(248,164,184,.6);background:transparent;align-items:center;justify-content:center;font:600 15px/1.2 var(--display);text-align:center}
+
+.fmt{display:flex;flex-direction:column;padding:0;border:2px solid var(--gold);border-radius:18px;overflow:hidden;background:var(--card);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.fmt[aria-pressed="true"]{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.fmt .ph{position:relative;display:block;width:100%;aspect-ratio:350/196;max-width:100%}
+.fmt .ph img{width:100%;height:100%;object-fit:cover}
+.fmt .ph .sticker{position:absolute;left:12px;top:12px;background:var(--gold)}
+.fmt .in{display:flex;flex-direction:column;gap:6px;padding:14px 16px 16px}
+.fmt .t{font:600 17px/1.2 var(--display)}
+.fmt .s{font-size:13px;line-height:1.4;color:var(--muted)}
+.fmt .g{font-size:12px;line-height:1.35;color:var(--gold)}
+.fmtrow{display:flex;align-items:center;gap:14px;padding:10px 14px 10px 10px;border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.fmtrow[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.fmtrow img{width:88px;height:88px;flex:none;border-radius:12px;object-fit:cover}
+.fmtrow .tx{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fmtrow .t{font:600 15px/1.2 var(--display)}
+.fmtrow .s{font-size:13px;line-height:1.4;color:var(--muted)}
+
+/* Кнопки й наліпки */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;padding:0 20px;border:0;border-radius:999px;background:var(--fg);color:var(--ink);font:600 15px/1.1 var(--display);text-transform:uppercase;letter-spacing:.02em;text-decoration:none;text-align:center;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:default}
+.btn2{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:0 20px;border:1.5px solid rgba(255,249,248,.3);border-radius:999px;background:transparent;color:var(--fg);font:600 15px/1.2 var(--text);text-decoration:none;text-align:center;cursor:pointer}
+.link{align-self:center;padding:10px;border:0;background:none;color:var(--gold);font:500 14px var(--text);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.sticker{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--pink);color:var(--ink);font:700 12px/1.2 var(--text)}
+.tilt-r{transform:rotate(4deg)}
+.tilt-l{transform:rotate(-3deg)}
+
+/* Старт */
+.logobar{height:72px;display:flex;align-items:center;justify-content:space-between;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.logo{width:128px;height:auto}
+.pola{position:relative;height:290px;margin-left:max(16px,env(safe-area-inset-left,0px));margin-right:max(16px,env(safe-area-inset-right,0px))}
+.pola .a,.pola .b{position:absolute;border:6px solid var(--fg);background:#222;overflow:hidden}
+.pola .a{left:2%;top:12px;width:62%;max-width:240px;aspect-ratio:22/25;transform:rotate(-5deg)}
+.pola .b{right:2%;top:48px;width:50%;max-width:190px;aspect-ratio:18/21;transform:rotate(6deg)}
+.pola img{width:100%;height:100%;object-fit:cover}
+.ten{position:absolute;right:16px;top:6px;width:64px;height:64px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font:800 16px/1 var(--display);transform:rotate(-10deg)}
+
+/* Підсумок */
+.banner{position:relative;width:100%;aspect-ratio:342/150;max-width:100%;border-radius:16px;overflow:hidden;background:var(--card)}
+.banner img{width:100%;height:100%;object-fit:cover}
+.banner .sticker{position:absolute;left:12px;top:12px}
+.price{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 8px}
+.price b{font:800 44px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.price .cur{font-weight:600;font-size:16px;color:var(--gold)}
+.price .dim{font-size:16px;color:var(--muted)}
+.price .sticker{align-self:center}
+.card{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:16px;background:var(--card)}
+.card .lbl{font-size:12px;color:var(--gold)}
+.card .nm{font:600 16px/1.25 var(--display)}
+.card .p{font:800 20px/1.1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.card .s{font-size:13px;line-height:1.4;color:var(--muted)}
+.prog{display:flex;flex-direction:row;gap:12px;align-items:flex-start}
+.prog img{width:56px;height:56px;flex:none;border-radius:10px;object-fit:cover}
+.prog .tx{display:flex;flex-direction:column;gap:4px;min-width:0}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.steps li{display:flex;flex-direction:column;gap:8px;font-size:12px;line-height:1.35}
+.steps b{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font:600 13px/1 var(--display);color:var(--gold)}
+.notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.notes li{position:relative;padding-left:16px;font-size:13px;line-height:1.45;color:var(--muted)}
+.notes li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.downsell{margin:0;padding:12px 14px;border-radius:14px;border:1px solid rgba(197,168,128,.5);font-size:13px;line-height:1.45;color:var(--fg)}
+.teaser{display:flex;flex-direction:column;gap:6px;width:100%;padding:14px 16px;border:1.5px solid var(--gold);border-radius:16px;background:transparent;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.teaser .s{font-size:13px;line-height:1.4;color:var(--muted)}
+.teaser .go{font:600 13px/1.2 var(--display);color:var(--gold);text-transform:uppercase}
+
+/* Форма */
+form{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.flabel{font-size:13px;color:var(--muted)}
+.field .sub{font-size:12px;color:var(--soft)}
+input,textarea{width:100%;min-height:52px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--fg);font:16px/1.4 var(--text)}
+textarea{min-height:96px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--gold)}
+input[aria-invalid="true"]{border-color:var(--pink)}
+input[type="date"]{color-scheme:dark}
+.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.chip{min-height:48px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);font:600 14px/1.2 var(--text);cursor:pointer}
+.chip[aria-checked="true"]{background:var(--fg);border-color:var(--fg);color:var(--ink)}
+.err{margin:0;font-size:13px;color:var(--pink)}
+.hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.fail{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px solid var(--pink);border-radius:16px}
+.fail p{margin:0;font-size:14px;line-height:1.45}
+.revwrap{display:flex;flex-direction:column;gap:10px;padding-top:8px}
+.revwrap h3{margin:0;font:600 15px/1.2 var(--display);text-transform:uppercase}
+.revs{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-left:calc(-1 * max(20px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(20px,env(safe-area-inset-right,0px)));padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));scroll-padding-left:max(20px,env(safe-area-inset-left,0px));padding-bottom:4px}
+.revs::-webkit-scrollbar{display:none}
+.rev{flex:0 0 84%;max-width:340px;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:18px;background:var(--card)}
+.rev .who{display:flex;align-items:center;gap:10px}
+.rev .av{width:36px;height:36px;flex:none;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font:800 14px/1 var(--display)}
+.rev .nm{display:block;font-weight:600;font-size:14px;line-height:1.2}
+.rev .via{display:block;font-size:12px;color:var(--soft)}
+.rev .b{align-self:flex-start;max-width:100%;margin:0;padding:10px 12px;border-radius:16px 16px 16px 4px;background:#2A2A2A;font-size:14px;line-height:1.45}
+.revhint{margin:0;font-size:12px;color:var(--soft)}
+.demo{margin:0;padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--pink);color:var(--ink);font-size:12px;line-height:1.4;text-align:center}
+@media (prefers-reduced-motion:reduce){#screen,.opt,.tile{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <main id="screen" aria-live="polite"></main>
+  <p class="demo" id="demo" hidden>Демо-режим: заявки поки нікуди не надсилаються. Щоб вони йшли в Telegram, вкажіть адресу скрипта в CONFIG.endpoint.</p>
+</div>
+<script>
+/* ====== НАЛАШТУВАННЯ ====== */
+const CONFIG = {
+  endpoint: 'https://script.google.com/macros/s/AKfycbyz7J5Y7_yDg06OeDRxnEz_Gv1y0oi7Xq3nm872boJd_I_1hvxFFjjpxDauUdE0UgSrZQ/exec',   // вебзастосунок Google Apps Script «ТОШО квіз: заявки»
+  pixelId: '',    // ID пікселя Meta (README, крок 4)
+  instagram: 'https://www.instagram.com/tosho_event/',
+  telegram: '',   // посилання на Telegram для запасного зв'язку, наприклад https://t.me/назва
+};
+
+/* ====== ЦІНИ Й ЛОГІКА (аркуш «Прайс», 31.10.2026) ====== */
+// LOGIC START
+const TURNKEY_FROM = 80000;
+const GAMES = {
+  mafia:  { name: 'Мафія', price: 11500, max: 20, img: 'mafia', about: 'Наша версія з масками й кейсом: мешканці міста вираховують мафію серед своїх.' },
+  trash:  { name: 'Треш-коктейль', price: 14500, max: 30, img: 'trash', hit: true, about: 'Дві команди крутять колесо фортуни й проходять виклики. Команда, що програла, п’є «треш-коктейль».' },
+  stakes: { name: 'Ставки', price: 16500, max: 30, img: 'stakes', about: 'Казино з майстром гри в масці: дві команди ставлять фішки й ризикують раунд за раундом.' },
+  cuffs:  { name: 'Кайданки', price: 16500, max: 30, img: 'cuffs', about: 'Гравці стають заручниками в кайданках і виборюють ключ завданнями з таємних боксів.' },
+  guess:  { name: 'Вгадай, що всередині', price: 19500, max: 30, img: 'guess', about: 'Гра на сміливість: навпомацки вгадують, хто сидить у скрині. Тварини справжні.' }
+};
+const PAIRS = {
+  'trash+mafia': 26000, 'stakes+mafia': 28000, 'cuffs+mafia': 28000, 'guess+mafia': 31000,
+  'guess+trash': 34000, 'guess+stakes': 36000, 'guess+cuffs': 36000
+};
+const GUESTS = { G10: 10, G15: 15, G20: 20, G30: 30, G31: 31 };
+const MK_BASE = 11000;   // майстер-клас до 10 учасників
+const MK_EXTRA = 1100;   // за кожного учасника понад 10
+const MK = {
+  perfume:   { name: 'Парфумерна лабораторія', price: 11000, img: 'mk-perfume' },
+  candle:    { name: 'Свічка', price: 11000, img: 'mk-candle' },
+  affirm:    { name: 'Картина-афірмація', price: 11000, img: 'mk-affirm' },
+  bearbrick: { name: 'Bearbrick', price: 11000, img: 'mk-bearbrick' },
+  tshirt:    { name: 'Розпис футболок', price: 12500, img: 'mk-tshirt' } // у квізі поки не показуємо: щоб показати, додайте 'tshirt' у mkFor
+};
+// Найпопулярніші майстер-класи; порядок залежить від того, хто святкує
+const mkFor = who => who === 'girl' ? ['perfume', 'candle', 'affirm', 'bearbrick'] : ['bearbrick', 'candle', 'perfume', 'affirm'];
+
+function pickGame(a) {
+  const n = GUESTS[a.guests] || 10;
+  if (a.age === 'A8') return (a.vibe === 'intrigue' && n <= 20) ? 'mafia' : 'trash';
+  const map = { risk: 'stakes', intrigue: 'mafia', dare: 'trash', escape: 'cuffs', surprise: 'guess', unsure: 'trash' };
+  let g = map[a.vibe] || 'trash';
+  if (g === 'mafia' && n > 20) g = 'trash';
+  return g;
+}
+function pairFor(g, n) {
+  if (n <= 20) return g === 'mafia' ? ['trash', 'mafia'] : [g, 'mafia'];
+  return (g === 'trash' || g === 'guess') ? ['guess', 'trash'] : ['guess', g];
+}
+function compute(a) {
+  if (a.age === 'U8') return { type: 'under8' };
+  const n = GUESTS[a.guests] || 10;
+  const g = pickGame(a);
+  const pair = pairFor(g, n);
+  const pairPrice = PAIRS[pair.join('+')];
+  if (!pairPrice) throw new Error('Немає пари в прайсі: ' + pair.join('+'));
+  const part2 = a.part2 || 'unsure';
+  const mk = MK[a.mk] ? a.mk : null;
+  const mkPrice = GAMES[g].price + (mk ? MK[mk].price : MK_BASE);
+  const budgetHigh = ['B80', 'B80plus', 'B_unknown'].includes(a.budget);
+  let type = ((a.format === 'turnkey' && budgetHigh) || (a.format === 'unsure' && a.budget === 'B80plus')) ? 'turnkey' : 'game';
+  if (a.forceTurnkey) type = 'turnkey';
+  const downsell = type === 'game' && a.format === 'turnkey' && (a.budget === 'B25' || a.budget === 'B40');
+  const notes = [];
+  const games = type === 'turnkey' ? [g] : [g].concat(pair);
+  if (games.includes('guess')) notes.push('animals');
+  if (type === 'game' && a.place === 'novenue') notes.push('venue');
+  if (part2 === 'mk' && n > 10) notes.push('mkExtra');
+  if (n > 30) notes.push('over30');
+  const teaser = type === 'game' && !downsell && (n >= 16 || a.place === 'novenue');
+  return { type, n, game: g, pair, pairPrice, part2, mk, mkPrice, downsell, notes, teaser };
+}
+function hotness(a, today) {
+  if (a.date === 'D_exact' && a.dateValue) {
+    const days = Math.round((Date.parse(a.dateValue) - Date.parse(today)) / 864e5);
+    return days <= 31 ? 'ГАРЯЧА' : days <= 92 ? 'ТЕПЛА' : 'ХОЛОДНА';
+  }
+  return a.date === 'D1' ? 'ГАРЯЧА' : a.date === 'D3' ? 'ТЕПЛА' : 'ХОЛОДНА';
+}
+// LOGIC END
+
+const NOTES = {
+  animals: 'Про алергії й страхи гравців спитаємо до броні.',
+  venue: 'Своєї локації в нас немає, ми приїжджаємо туди, де зручно вам. Менеджер надішле зали у вашому районі, де ми вже проводили свята.',
+  over30: 'На понад 30 гравців менеджер уточнить, як провести гру для всіх.',
+  mkExtra: 'Ціна майстер-класу за 10 учасників, кожен наступний +1 100 грн.'
+};
+const L = {
+  age: { A8: '8–9', A10: '10–11', A12: '12–14', A15: '15–17' },
+  who: { girl: 'іменинниця з подругами', boy: 'іменинник з друзями', mixed: 'змішана компанія' },
+  format: { turnkey: 'під ключ', game: 'гра з ведучим', unsure: 'ще не вирішили' },
+  part2: { game: 'ще одна гра', mk: 'майстер-клас', one: 'одна гра', unsure: 'ще не знають' },
+  vibe: { risk: 'азарт', intrigue: 'інтрига', dare: 'виклики', escape: 'втеча', surprise: 'невідоме', unsure: 'порадьте самі' },
+  guests: { G10: 'до 10', G15: '11–15', G20: '16–20', G30: '21–30', G31: 'понад 30' },
+  place: { home: 'вдома', venue: 'зал уже є', novenue: 'місця ще немає' },
+  date: { D1: 'протягом місяця', D3: 'через 1–3 місяці', D_unknown: 'не визначились' },
+  budget: { B25: 'до 25 000', B40: '25 000–40 000', B80: '40 000–80 000', B80plus: 'від 80 000', B_unknown: 'не визначились' },
+  messenger: { telegram: 'Telegram', viber: 'Viber', whatsapp: 'WhatsApp', call: 'дзвінок' }
+};
+
+/* ====== ПИТАННЯ ====== */
+const Q = {
+  age: { title: 'Скільки виповнюється?', opts: [['A10', '10–11'], ['A12', '12–14'], ['A15', '15–17'], ['young', 'Молодше 10']] },
+  age2: { title: 'Скільки саме?', opts: [['A8', '8 або 9'], ['U8', '7 і менше']] },
+  who: { title: 'Хто святкує?', opts: [['girl', 'Іменинниця з подругами'], ['boy', 'Іменинник з друзями'], ['mixed', 'Змішана компанія']] },
+  part2: { title: 'Що після перерви?', hint: 'Свято з двох частин триває до 3,5 годин разом із перервою.', opts: [['game', 'Ще одна гра'], ['mk', 'Майстер-клас', 'Кожен забере свою річ додому'], ['one', 'Вистачить однієї гри', 'Півтори години'], ['unsure', 'Ще не знаємо']] },
+  guests: { title: 'Скільки буде гравців разом з іменинником?', hint: 'Доплати за кількість гравців у грі немає.', opts: [['G10', 'До 10'], ['G15', '11–15'], ['G20', '16–20'], ['G30', '21–30'], ['G31', 'Понад 30']] },
+  place: { title: 'Де святкуєте?', opts: [['home', 'Вдома'], ['venue', 'Кафе або зал уже є'], ['novenue', 'Місця ще немає', 'Порадимо зали, де ми вже проводили свята']] },
+  budget: { title: 'На який бюджет орієнтуєтесь?', hint: 'Під цю суму підберемо програму.', opts: [['B25', 'До 25 000 грн'], ['B40', '25 000–40 000 грн'], ['B80', '40 000–80 000 грн'], ['B80plus', 'Від 80 000 грн'], ['B_unknown', 'Ще не визначились']] }
+};
+const VIBES = [
+  ['risk', 'Азарт', 'Фішки, ставки і майстер гри в масці', 'stakes'],
+  ['intrigue', 'Інтрига', 'Хтось за столом бреше, треба його вирахувати', 'mafia'],
+  ['dare', 'Виклики', 'Колесо фортуни і завдання на сміливість', 'trash'],
+  ['escape', 'Втеча', 'Кайданки, таємні бокси і пошук ключа', 'cuffs'],
+  ['surprise', 'Невідоме', 'Навпомацки вгадати, хто сидить у скрині', 'guess']
+];
+const NEXT = {
+  age: v => v === 'young' ? 'age2' : 'who',
+  age2: v => v === 'U8' ? 'under8' : 'who',
+  who: () => 'format', format: () => 'vibe', vibe: () => 'part2',
+  part2: v => v === 'mk' ? 'mk' : 'guests', mk: () => 'guests',
+  guests: () => A.format === 'turnkey' ? 'date' : 'place',
+  place: () => 'date', date: () => 'budget', budget: () => 'summary'
+};
+
+/* ====== СТАН ====== */
+let A = {};
+let F = { name: '', phone: '', messenger: '', kid: '', comment: '' };
+let cur = 'start';
+const view = document.getElementById('screen');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const qs = new URLSearchParams(location.search);
+const UTM = {};
+['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(k => { if (qs.get(k)) UTM[k] = qs.get(k); });
+const FBCLID = qs.get('fbclid') || '';
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const todayISO = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const dmy = iso => iso ? iso.split('-').reverse().join('.') : '';
+const steps = () => ['age', 'who', 'format', 'vibe', 'part2', 'guests'].concat(A.format === 'turnkey' ? [] : ['place'], ['date', 'budget']);
+const shareLabel = () => A.who === 'girl' ? 'Переслати іменинниці' : 'Переслати імениннику';
+
+const ICON = {
+  back: '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  arrow: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  check: '<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>'
+};
+
+/* ====== ПІКСЕЛЬ ====== */
+function initPixel() {
+  if (!CONFIG.pixelId) return;
+  !function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) }; if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s) }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', CONFIG.pixelId);
+  fbq('track', 'PageView');
+}
+function track(name, data, standard, opts) {
+  try { if (window.fbq) fbq(standard ? 'track' : 'trackCustom', name, data || {}, opts || {}); } catch (e) {}
+}
+const cookie = k => { const m = document.cookie.match('(?:^|; )' + k + '=([^;]*)'); return m ? decodeURIComponent(m[1]) : ''; };
+
+/* ====== ЕКРАНИ ====== */
+function topBar(key) {
+  if (!key) return `<div class="top"><button class="back" data-act="back" aria-label="Назад">${ICON.back}</button><span class="toptitle">${cur === 'form' ? 'Контакти' : 'Підсумок'}</span><span class="sp44"></span></div>`;
+  const st = steps(), i = st.indexOf(key) + 1;
+  const bars = st.map((_, j) => `<i class="${j < i ? 'on' : ''}"></i>`).join('');
+  return `<div class="top"><button class="back" data-act="back" aria-label="Назад">${ICON.back}</button><div class="bar" aria-hidden="true">${bars}</div><span class="count" aria-label="Питання ${i} з ${st.length}">${i}/${st.length}</span></div>`;
+}
+function optBtn(q, v, t, s, pressed) {
+  return `<button class="opt" data-act="ans" data-q="${q}" data-v="${v}" aria-pressed="${pressed}"><span class="t">${t}</span>${s ? `<span class="s">${s}</span>` : ''}</button>`;
+}
+/* ====== ВІДГУКИ (дослівно з переписок, без емодзі) ====== */
+const REVIEWS = [
+  { name: 'Анастасія', via: 'Instagram', msgs: [
+    'Я не втомлююсь захоплюватись вашою роботою! Ви реально класні і круті! Утримувати увагу 11 непосидючих дітей - це прям рівень! Обожнюю! Всі діти в захваті! І зазвичай, мене майже всі батьки потім запитують хто це був такий крутий у нас на святі)))',
+    'дівчатам прям вау зайшло) свічки- топ!'] },
+  { name: 'Вероніка', via: 'Instagram', msgs: [
+    'Доброго дня) хочу подякувати за свято, дітки у захваті, донька сіла у авто сказала що ще ніколи так імбово не гуляли. Декор чудовий, ігри також, шоу також супер, дуже дякую'] },
+  { name: 'Анна', via: 'Telegram', msgs: [
+    'Хотіла подякувати за вчорашній вечір, донька в захваті, сказала що наступного разу хотіла б все точно так само'] },
+  { name: 'Наталі', via: 'Telegram', msgs: [
+    'Трохи із запізненням, але хотіла подякувати за проведення випускного у дітей. Всі дуже задоволені, як діти так і дорослі. Пройшов вже місяць, а батьки ще згадують і діляться тільки позитивними враженнями'] },
+  { name: 'Наталія', via: 'Instagram', msgs: [
+    'Доброго дня! Хочу подякувати вам за вчорашнє свято для нашого синочка) Ви великі молодці, усім все дуже сподобалось, було неймовірне свято як для дітей так і для дорослих) щиро дякуємо за вашу працю, і до нових зустрічей)'] },
+  { name: 'Анна', via: 'Instagram', msgs: [
+    'Щиро дякуємо вам за роботу, ви неймовірні, діти щасливі, ми щасливі, що їм все сподобалося',
+    'Обіймаємо вас'] }
+];
+function reviewsBlock() {
+  if (!REVIEWS.length) return '';
+  const cards = REVIEWS.map(r => `<article class="rev"><div class="who"><span class="av" aria-hidden="true">${esc(r.name.charAt(0))}</span><span><span class="nm">${esc(r.name)}</span><span class="via">${esc(r.via)}</span></span></div>${r.msgs.map(m => `<p class="b">${esc(m)}</p>`).join('')}</article>`).join('');
+  return `<section class="revwrap" aria-label="Відгуки батьків"><h3>Що пишуть після свята</h3><div class="revs">${cards}</div><p class="revhint">Гортайте вбік: ${REVIEWS.length} відгуків з переписок.</p></section>`;
+}
+function mkNames(who) {
+  const n = mkFor(who).map(k => k === 'bearbrick' ? MK[k].name : MK[k].name.charAt(0).toLowerCase() + MK[k].name.slice(1));
+  return n.length > 2 ? n.slice(0, -1).join(', ') + ' або ' + n[n.length - 1] : n.join(' або ');
+}
+function secondPart(r, g, pairName) {
+  const pairCard = `<div class="card"><span class="lbl">Свято з двох частин</span><span class="nm">${pairName}</span><span class="p">${money(r.pairPrice)}&nbsp;грн</span><span class="s">До 3,5 годин разом із перервою.</span></div>`;
+  const mkName = r.mk ? `майстер-клас «${MK[r.mk].name}»` : 'майстер-клас';
+  const mkImg = MK[r.mk || mkFor(A.who)[0]].img;
+  const mkCard = `<div class="card prog"><img src="img/${mkImg}.webp" alt=""><div class="tx"><span class="lbl">Свято з двох частин</span><span class="nm">${g.name} + ${mkName}</span><span class="p">від ${money(r.mkPrice)}&nbsp;грн</span><span class="s">До 3,5 годин разом із перервою. Кожен учасник забере свою річ додому.${r.mk ? '' : ' На вибір: ' + mkNames(A.who) + '.'}</span></div></div>`;
+  if (r.part2 === 'mk') return mkCard;
+  if (r.part2 === 'game') return pairCard;
+  if (r.part2 === 'one') return `<p class="mkline">Захочете довше: ${pairName}, ${money(r.pairPrice)}&nbsp;грн, до 3,5 годин разом із перервою.</p>`;
+  return pairCard + `<p class="mkline">Або замість другої гри майстер-клас: ${mkNames(A.who)}. Разом з грою від ${money(r.mkPrice)}&nbsp;грн.</p>`;
+}
+function afterBreak(r) {
+  if (r.part2 === 'mk') return 'Після перерви: ' + (r.mk ? `майстер-клас «${MK[r.mk].name}»` : 'майстер-клас на вибір') + '.';
+  if (r.part2 === 'game') return 'Після перерви: ' + GAMES[r.pair.find(k => k !== r.game) || r.pair[1]].name + '.';
+  return '';
+}
+const R = {
+  start() {
+    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="128" height="44"><span class="sticker tilt-r">9 питань</span></div>
+<div class="pola" aria-hidden="true"><div class="a"><img src="img/start-a.webp" alt=""></div><div class="b"><img src="img/start-b.webp" alt=""></div><span class="ten">10+</span></div>
+<div class="body">
+<h1 tabindex="-1">Побачте <span class="gold">свято</span> до того, як воно почнеться</h1>
+<p class="lead">Дев’ять коротких питань. Наприкінці покажемо формат і ціну, а візуалізацію свята надішлемо в месенджер.</p>
+<div class="spacer"></div>
+<button class="btn" data-act="start">Почати${ICON.arrow}</button>
+<p class="small center">Проходьте разом з іменинником: свято обирає він.</p>
+</div>`;
+  },
+  q(key) {
+    const q = Q[key], val = key === 'age2' ? A.age : A[key];
+    const opts = q.opts.map(([v, t, s]) => optBtn(key, v, t, s, val === v)).join('');
+    return `${topBar(key === 'age2' ? 'age' : key)}<div class="body"><h2 tabindex="-1">${q.title}</h2>${q.hint ? `<p class="hint">${q.hint}</p>` : ''}<div class="opts">${opts}</div></div>`;
+  },
+  format() {
+    const p = v => A.format === v;
+    return `${topBar('format')}<div class="body"><h2 tabindex="-1">Як організуємо свято?</h2>
+<button class="fmt" data-act="ans" data-q="format" data-v="turnkey" aria-pressed="${p('turnkey')}">
+<span class="ph"><img src="img/turnkey.webp" alt="Декорований зал ТОШО!?: червоні штори, свічки, неон"><span class="sticker">усе беремо на себе</span></span>
+<span class="in"><span class="t">Під ключ</span><span class="s">Локація, декор і фотозона, кейтеринг і торт, фото й відео, програма і координація в день свята.</span><span class="g">Підрядникам ви платите ті самі ціни, що й напряму.</span></span></button>
+<button class="fmtrow" data-act="ans" data-q="format" data-v="game" aria-pressed="${p('game')}"><img src="img/host.webp" alt=""><span class="tx"><span class="t">Гра з ведучим</span><span class="s">Приїдемо з грою, реквізитом і ведучим туди, де святкуєте.</span></span></button>
+${optBtn('format', 'unsure', 'Ще не вирішили', 'Порадимо після ваших відповідей.', p('unsure')).replace('class="opt"', 'class="opt dash"')}
+</div>`;
+  },
+  vibe() {
+    const tiles = VIBES.map(([v, t, s, img]) => `<button class="tile" data-act="ans" data-q="vibe" data-v="${v}" aria-pressed="${A.vibe === v}"><img src="img/${img}.webp" alt=""><span class="check">${ICON.check}</span><span class="plate"><span class="t">${t}</span><span class="s">${s}</span></span></button>`).join('');
+    return `${topBar('vibe')}<div class="body"><h2 tabindex="-1">Що зайде вашій компанії?</h2><div class="tiles">${tiles}<button class="tile dash" data-act="ans" data-q="vibe" data-v="unsure" aria-pressed="${A.vibe === 'unsure'}">Порадьте самі</button></div></div>`;
+  },
+  mk() {
+    const keys = mkFor(A.who);
+    const tiles = keys.map(k => { const m = MK[k]; return `<button class="tile" data-act="ans" data-q="mk" data-v="${k}" aria-pressed="${A.mk === k}"><img src="img/${m.img}.webp" alt=""><span class="check">${ICON.check}</span><span class="plate"><span class="t">${m.name}</span><span class="s">від ${money(m.price)} грн</span></span></button>`; }).join('');
+    return `${topBar('part2')}<div class="body"><h2 tabindex="-1">Який майстер-клас?</h2><p class="hint">Кожен учасник забере свою річ додому.</p><div class="tiles">${tiles}<button class="tile dash${keys.length % 2 ? '' : ' wide'}" data-act="ans" data-q="mk" data-v="any" aria-pressed="${A.mk === 'any'}">Оберемо разом</button></div></div>`;
+  },
+  date() {
+    const open = A._dateOpen || A.date === 'D_exact';
+    const o = (v, t) => optBtn('date', v, t, '', A.date === v);
+    const known = `<button class="opt" data-act="dateknown" aria-pressed="${A.date === 'D_exact'}" aria-expanded="${!!open}"><span class="t">Знаємо дату</span></button>`;
+    const picker = open ? `<div class="field"><label for="f-date">Дата свята</label><input type="date" id="f-date" min="${todayISO()}" value="${esc(A.dateValue || '')}"></div><p class="err" id="e-date" hidden>Оберіть дату, не раніше сьогодні.</p><button class="btn" data-act="datego">Далі${ICON.arrow}</button>` : '';
+    return `${topBar('date')}<div class="body"><h2 tabindex="-1">Коли свято?</h2><div class="opts">${known}${picker}${o('D1', 'Протягом місяця')}${o('D3', 'Через 1–3 місяці')}${o('D_unknown', 'Ще не визначились')}</div></div>`;
+  },
+  summary() {
+    const r = compute(A);
+    const g = GAMES[r.game];
+    const notes = r.notes.length ? `<ul class="notes">${r.notes.map(k => `<li>${NOTES[k]}</li>`).join('')}</ul>` : '';
+    const tail = `<button class="btn" data-act="toform">Отримати візуалізацію</button><button class="btn2" data-act="share">${shareLabel()}</button>${reviewsBlock()}<button class="link" data-act="again">Пройти ще раз</button>`;
+    if (r.type === 'turnkey') {
+      return `${topBar()}<div class="body">
+<div class="banner"><img src="img/turnkey-wide.webp" alt="Декорований зал ТОШО!?"><span class="sticker tilt-l">вам підходить</span></div>
+<h2 tabindex="-1">Свято під ключ</h2>
+<div class="price"><span class="dim">від</span><b>${money(TURNKEY_FROM)}</b><span class="cur">грн</span></div>
+<p class="lead">Беремо на себе все: концепцію, підбір локації, кейтеринг і торт, декор і фотозону, фото й відео, програму і координацію в день свята. Підрядникам ви платите ті самі ціни, що й напряму, тільки все через нас.</p>
+<div class="card prog"><img src="img/${g.img}.webp" alt=""><div class="tx"><span class="lbl">Програма всередині</span><span class="nm">${g.name}</span><span class="s">${g.about}</span>${afterBreak(r) ? `<span class="s gold">${afterBreak(r)}</span>` : ''}</div></div>
+<ol class="steps"><li><b>1</b>Менеджер напише за 15 хвилин</li><li><b>2</b>Уточнить деталі за 10 хвилин дзвінка</li><li><b>3</b>Надішлемо візуалізацію і кошторис</li></ol>
+${notes}
+<p class="small">Якщо локацію знайдете самі: ${g.name}, ${money(g.price)}&nbsp;грн, приїдемо з грою і ведучим.</p>
+<div class="spacer"></div>${tail}</div>`;
+    }
+    const pairName = r.pair.map(k => GAMES[k].name).join(' + ');
+    return `${topBar()}<div class="body">
+${r.downsell ? `<p class="downsell">Свято під ключ починається від ${money(TURNKEY_FROM)}&nbsp;грн. У вашому бюджеті радимо гру з ведучим на вашій локації.</p>` : ''}
+<div class="banner"><img src="img/${g.img}-wide.webp" alt="Гра ${esc(g.name)}"><span class="sticker tilt-l">радимо</span></div>
+<h2 tabindex="-1">${g.name}</h2>
+<div class="price"><b>${money(g.price)}</b><span class="cur">грн</span><span class="dim">· 1,5 години</span>${g.hit ? '<span class="sticker tilt-r">Хіт</span>' : ''}</div>
+<p class="lead">${g.about}</p>
+${secondPart(r, g, pairName)}
+<p class="small">У ціні команда, реквізит і дорога в межах Києва. Дату закріплюємо після передоплати 30%.</p>
+${notes}
+${r.teaser ? `<button class="teaser" data-act="teaser"><span class="s">Хочете, щоб локацію, декор і фото взяли на себе ми? Свято під ключ від ${money(TURNKEY_FROM)}&nbsp;грн.</span><span class="go">Подивитися</span></button>` : ''}
+<div class="spacer"></div>${tail}</div>`;
+  },
+  form() {
+    const ch = (v, t) => `<button type="button" class="chip" role="radio" data-act="msg" data-v="${v}" aria-checked="${F.messenger === v}">${t}</button>`;
+    return `${topBar()}<div class="body"><h2 tabindex="-1">Куди надіслати візуалізацію?</h2>
+<form id="lead" novalidate>
+<div class="field"><label for="f-name">Ваше ім’я</label><input id="f-name" name="name" autocomplete="given-name" value="${esc(F.name)}" required><p class="err" id="e-name" hidden>Напишіть, як до вас звертатися.</p></div>
+<div class="field"><label for="f-phone">Телефон</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+380 (__) ___-__-__" value="${esc(F.phone)}" required><p class="err" id="e-phone" hidden>Потрібно 9 цифр після +380.</p></div>
+<div class="field"><span class="flabel" id="l-msg">Де вам зручніше?</span><div class="chips" role="radiogroup" aria-labelledby="l-msg">${ch('telegram', 'Telegram')}${ch('viber', 'Viber')}${ch('whatsapp', 'WhatsApp')}${ch('call', 'Дзвінок')}</div><p class="err" id="e-msg" hidden>Оберіть, куди вам написати.</p></div>
+<div class="field"><label for="f-kid">Ім’я іменинника</label><input id="f-kid" name="kid" value="${esc(F.kid)}"><span class="sub">Додамо у візуалізацію. Можна не заповнювати.</span></div>
+<div class="field"><label for="f-comment">Коментар</label><textarea id="f-comment" name="comment" placeholder="Що любить іменинник, у що вже грали">${esc(F.comment)}</textarea></div>
+<div class="hp" aria-hidden="true"><label for="f-site">Сайт</label><input id="f-site" name="website" tabindex="-1" autocomplete="off"></div>
+<div id="f-fail" hidden></div>
+<button class="btn" type="submit" id="f-send">Отримати візуалізацію</button>
+<p class="small center">Натискаючи кнопку, ви погоджуєтесь, що менеджер ТОШО!? напише вам щодо свята.</p>
+</form></div>`;
+  },
+  thanks() {
+    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="128" height="44"></div>
+<div class="body"><h2 tabindex="-1">Дякуємо, ${esc(F.name)}</h2>
+<p class="lead">${thanksText()}</p>
+<p class="small">Візуалізацію і кошторис надішлемо того ж вечора або наступного дня після розмови.</p>
+${reviewsBlock()}
+<div class="spacer"></div>
+<a class="btn2" href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Подивитися, як проходять наші ігри</a>
+<button class="btn2" data-act="share">${shareLabel()}</button>
+</div>`;
+  },
+  under8() {
+    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="128" height="44"></div>
+<div class="body"><h2 tabindex="-1">Поки рано</h2>
+<p class="lead">Дякуємо, що зазирнули. Наші ігри написані для підлітків від 10 років. Будемо раді познайомитися, коли іменинник трохи підросте.</p>
+<div class="spacer"></div>
+<a class="btn" href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Подивитися наш Instagram</a>
+<button class="btn2" data-act="again">Почати спочатку</button>
+</div>`;
+  }
+};
+['age', 'age2', 'who', 'part2', 'guests', 'place', 'budget'].forEach(k => { R[k] = () => R.q(k); });
+
+function kyivMinutes() {
+  for (const tz of ['Europe/Kyiv', 'Europe/Kiev']) {
+    try {
+      const p = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+      const h = +p.find(x => x.type === 'hour').value, m = +p.find(x => x.type === 'minute').value;
+      return h * 60 + m;
+    } catch (e) {}
+  }
+  const d = new Date(); return d.getHours() * 60 + d.getMinutes();
+}
+function thanksText() {
+  const m = kyivMinutes(), call = F.messenger === 'call', where = L.messenger[F.messenger] || 'месенджер';
+  if (m >= 540 && m < 1185) return call ? 'Менеджер подзвонить протягом 15 хвилин.' : `Менеджер напише вам у ${where} протягом 15 хвилин.`;
+  const day = m < 540 ? 'сьогодні' : 'завтра';
+  return call ? `Ми на зв’язку з 9:00 до 20:00, тож подзвонимо ${day} до 9:30.` : `Ми на зв’язку з 9:00 до 20:00, тож напишемо вам у ${where} ${day} до 9:30.`;
+}
+
+/* ====== НАВІГАЦІЯ ====== */
+const STACK = [];
+let canHist = true;
+function show(name, push) {
+  if (name === 'form' && A.sent) name = 'thanks';
+  if (push !== false) {
+    STACK.push({ s: name, ft: !!A.forceTurnkey });
+    try { history.pushState({ s: name, ft: !!A.forceTurnkey }, ''); } catch (e) { canHist = false; }
+  }
+  const paint = () => {
+    cur = name;
+    view.innerHTML = R[name]();
+    view.classList.remove('fade');
+    window.scrollTo(0, 0);
+    const h = view.querySelector('h1,h2'); if (h && name !== 'start') h.focus({ preventScroll: true });
+    if (name === 'form') bindForm();
+    if (Q[name] || ['format', 'vibe', 'date', 'mk'].includes(name)) track('QuizStep', { step: name, index: steps().indexOf(name === 'age2' ? 'age' : name === 'mk' ? 'part2' : name) + 1 });
+    if (name === 'summary') { const r = compute(A); track('QuizSummary', { type: r.type, game: r.game, price: r.type === 'turnkey' ? TURNKEY_FROM : GAMES[r.game].price }); }
+  };
+  if (reduced || !view.innerHTML) return paint();
+  view.classList.add('fade');
+  setTimeout(paint, 180);
+}
+function goBack() {
+  STACK.pop();
+  const st = STACK[STACK.length - 1] || { s: 'start' };
+  A.forceTurnkey = !!st.ft;
+  show(st.s, false);
+}
+window.addEventListener('popstate', e => {
+  STACK.pop();
+  const st = e.state || STACK[STACK.length - 1] || { s: 'start' };
+  A.forceTurnkey = !!st.ft;
+  show(st.s || 'start', false);
+});
+function answer(q, v) {
+  A.forceTurnkey = false;
+  if (q === 'age' || q === 'age2') { A.age = v; }
+  else { A[q] = v; }
+  if (q === 'format' && v === 'turnkey') delete A.place;
+  if (q === 'part2' && v !== 'mk') delete A.mk;
+  if (q === 'date') { delete A.dateValue; A._dateOpen = false; }
+  show(NEXT[q](v));
+}
+
+view.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+  if (act === 'start') { track('QuizStart'); show('age'); }
+  else if (act === 'ans') {
+    view.querySelectorAll(`[data-q="${b.dataset.q}"]`).forEach(x => x.setAttribute('aria-pressed', x === b));
+    setTimeout(() => answer(b.dataset.q, b.dataset.v), reduced ? 0 : 140);
+  }
+  else if (act === 'back') { if (canHist && STACK.length > 1) history.back(); else goBack(); }
+  else if (act === 'dateknown') { A._dateOpen = true; view.innerHTML = R.date(); const d = document.getElementById('f-date'); if (d) d.focus(); }
+  else if (act === 'datego') {
+    const d = document.getElementById('f-date'), err = document.getElementById('e-date');
+    if (!d.value || d.value < todayISO()) { err.hidden = false; d.setAttribute('aria-invalid', 'true'); return; }
+    A.forceTurnkey = false; A.date = 'D_exact'; A.dateValue = d.value; show('budget');
+  }
+  else if (act === 'teaser') { A.forceTurnkey = true; show('summary'); }
+  else if (act === 'toform') show('form');
+  else if (act === 'share') share(b);
+  else if (act === 'again') { A = {}; F = { name: '', phone: '', messenger: '', kid: '', comment: '' }; show('start'); }
+  else if (act === 'msg') {
+    F.messenger = b.dataset.v;
+    view.querySelectorAll('[data-act="msg"]').forEach(x => x.setAttribute('aria-checked', x === b));
+    document.getElementById('e-msg').hidden = true;
+  }
+});
+
+function shareText() {
+  const r = compute(A), g = GAMES[r.game];
+  const item = r.type === 'turnkey' ? `свято під ключ, від ${money(TURNKEY_FROM)} грн` : `${g.name}, ${money(g.price)} грн`;
+  return `Дивись, що нам радять у ТОШО!?: ${item}.`;
+}
+function share(btn) {
+  const url = location.origin + location.pathname;
+  const text = A.age ? shareText() : 'Свята для підлітків від 10 років у ТОШО!?.';
+  const done = () => { const t = btn.textContent; btn.textContent = 'Скопійовано'; setTimeout(() => { btn.textContent = t; }, 1800); };
+  if (navigator.share) { navigator.share({ title: 'ТОШО!?', text, url }).catch(() => {}); return; }
+  if (navigator.clipboard) navigator.clipboard.writeText(text + ' ' + url).then(done).catch(() => {});
+}
+
+/* ====== ФОРМА ====== */
+function phoneDigits(v) {
+  let d = String(v).replace(/\D/g, '');
+  if (d.startsWith('380')) d = d.slice(3); else if (d.startsWith('80')) d = d.slice(2); else if (d.startsWith('0')) d = d.slice(1);
+  return d.slice(0, 9);
+}
+function phoneFormat(d) {
+  if (!d) return '';
+  let s = '+380 (' + d.slice(0, 2);
+  if (d.length >= 2) s += ') ' + d.slice(2, 5);
+  if (d.length >= 5) s += '-' + d.slice(5, 7);
+  if (d.length >= 7) s += '-' + d.slice(7, 9);
+  return s;
+}
+function bindForm() {
+  const f = document.getElementById('lead');
+  const ph = document.getElementById('f-phone');
+  let lastD = phoneDigits(ph.value);
+  ph.addEventListener('input', e => {
+    let d = phoneDigits(ph.value);
+    if (e.inputType && e.inputType.indexOf('delete') === 0 && d === lastD) d = d.slice(0, -1);
+    ph.value = phoneFormat(d); lastD = d;
+  });
+  f.addEventListener('input', e => {
+    const k = { 'f-name': 'name', 'f-phone': 'phone', 'f-kid': 'kid', 'f-comment': 'comment' }[e.target.id];
+    if (k) { F[k] = e.target.value; e.target.removeAttribute('aria-invalid'); const er = document.getElementById('e-' + k); if (er) er.hidden = true; }
+  });
+  f.addEventListener('submit', e => { e.preventDefault(); submit(); });
+}
+// Назва програми точно як в аркуші «Прайс» (колонка «Програма» таблиці перевіряє значення за ним)
+const PRICE_SHORT = { mafia: 'Мафія', trash: 'Треш-коктейль', stakes: 'Ставки', cuffs: 'Кайданки', guess: 'Вгадай' };
+function priceItem(r) {
+  if (r.type === 'turnkey') return 'Під ключ';
+  if (r.part2 === 'mk') return GAMES[r.game].name + ' + МК';
+  if (r.part2 === 'one') return GAMES[r.game].name;
+  return r.pair.map(k => PRICE_SHORT[k]).join(' + ');
+}
+function payload() {
+  const r = compute(A), g = GAMES[r.game];
+  const pairName = r.pair.map(k => GAMES[k].name).join(' + ');
+  const mkTxt = r.mk ? `МК «${MK[r.mk].name}»` : 'МК на вибір';
+  const second = r.part2 === 'mk' ? `${g.name} + ${mkTxt} від ${money(r.mkPrice)}` : `${pairName} ${money(r.pairPrice)}`;
+  const shown = r.type === 'turnkey'
+    ? `під ключ від ${money(TURNKEY_FROM)}, програма ${g.name}${afterBreak(r) ? ', ' + afterBreak(r).toLowerCase().replace(/\.$/, '') : ''}`
+    : `${g.name} ${money(g.price)} · ${second}`;
+  const flags = [];
+  if (r.type === 'turnkey') flags.push('ПІД КЛЮЧ');
+  if (r.downsell) flags.push('хотіли під ключ');
+  const fbc = cookie('_fbc') || (FBCLID ? `fb.1.${Date.now()}.${FBCLID}` : '');
+  return {
+    eventId: 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    createdAt: new Date().toISOString(),
+    name: F.name.trim(), phone: '+380' + phoneDigits(F.phone), messenger: F.messenger,
+    kidName: F.kid.trim(), comment: F.comment.trim(),
+    website: (document.getElementById('f-site') || {}).value || '',
+    answers: { age: A.age, who: A.who, format: A.format, vibe: A.vibe, part2: A.part2 || '', mk: A.mk || '', guests: A.guests, place: A.format === 'turnkey' ? '' : (A.place || ''), date: A.date, dateValue: A.dateValue || '', budget: A.budget },
+    labels: {
+      age: L.age[A.age] || '', who: L.who[A.who] || '', format: L.format[A.format] || '', vibe: L.vibe[A.vibe] || '',
+      part2: A.part2 === 'mk' ? (MK[A.mk] ? 'майстер-клас «' + MK[A.mk].name + '»' : 'майстер-клас на вибір') : (L.part2[A.part2] || ''),
+      guests: L.guests[A.guests] || '', place: A.format === 'turnkey' ? '' : (L.place[A.place] || ''),
+      date: A.date === 'D_exact' ? dmy(A.dateValue) : (L.date[A.date] || ''), budget: L.budget[A.budget] || '',
+      messenger: L.messenger[F.messenger] || ''
+    },
+    result: { type: r.type, priceItem: priceItem(r), game: r.game, gameName: g.name, gamePrice: g.price, pair: pairName, pairPrice: r.pairPrice, downsell: r.downsell, teaserUsed: !!A.forceTurnkey, notes: r.notes, shown },
+    hot: hotness(A, todayISO()), flags,
+    utm: UTM, fbclid: FBCLID, fbp: cookie('_fbp'), fbc,
+    pageUrl: location.href, userAgent: navigator.userAgent
+  };
+}
+async function submit() {
+  let ok = true;
+  const bad = (id, err) => { document.getElementById(id).setAttribute('aria-invalid', 'true'); document.getElementById(err).hidden = false; ok = false; };
+  if (F.name.trim().length < 2) bad('f-name', 'e-name');
+  if (phoneDigits(F.phone).length !== 9) bad('f-phone', 'e-phone');
+  if (!F.messenger) { document.getElementById('e-msg').hidden = false; ok = false; }
+  if (!ok) { const first = view.querySelector('[aria-invalid="true"]') || view.querySelector('[data-act="msg"]'); if (first) first.focus(); return; }
+  const btn = document.getElementById('f-send'), fail = document.getElementById('f-fail');
+  btn.disabled = true; btn.textContent = 'Надсилаємо…'; fail.hidden = true;
+  const p = payload();
+  try {
+    if (CONFIG.endpoint) {
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 15000);
+      const res = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p), signal: ctl.signal });
+      clearTimeout(t);
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok || j.ok === false) throw new Error(j.error || 'HTTP ' + res.status);
+    } else {
+      await new Promise(r => setTimeout(r, 500));
+    }
+    track('Lead', { content_name: p.result.type }, true, { eventID: p.eventId });
+    A.sent = true;
+    show('thanks');
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Отримати візуалізацію';
+    const links = [CONFIG.telegram && `<a class="btn2" href="${esc(CONFIG.telegram)}" target="_blank" rel="noopener">Написати в Telegram</a>`, `<a class="btn2" href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Написати в Instagram</a>`].filter(Boolean).join('');
+    const txt = `Заявка з квізу: ${p.name}, ${p.phone}, ${p.labels.messenger}. ${p.labels.age}, ${p.labels.who}, гравців ${p.labels.guests}. Показали: ${p.result.shown}.`;
+    fail.className = 'fail';
+    fail.innerHTML = `<p>Не вийшло надіслати. Напишіть нам, ми відповімо. Ваші відповіді скопіюємо, щоб ви вставили їх у повідомлення.</p>${links}`;
+    fail.hidden = false;
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(() => {});
+  }
+}
+
+/* ====== СТАРТ ====== */
+document.getElementById('demo').hidden = !!CONFIG.endpoint;
+initPixel();
+try { history.replaceState({ s: 'start' }, ''); } catch (e) { canHist = false; }
+STACK.push({ s: 'start', ft: false });
+show('start', false);
+</script>
+</body>
+</html>
