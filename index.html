@@ -453,7 +453,7 @@ ${optBtn('format', 'unsure', 'Ще не вирішили', 'Порадимо п�
 <div class="card prog"><img src="img/${g.img}.webp" alt=""><div class="tx"><span class="lbl">Програма всередині</span><span class="nm">${g.name}</span><span class="s">${g.about}</span>${afterBreak(r) ? `<span class="s gold">${afterBreak(r)}</span>` : ''}</div></div>
 <ol class="steps"><li><b>1</b>Менеджер напише за 15 хвилин</li><li><b>2</b>Уточнить деталі за 10 хвилин дзвінка</li><li><b>3</b>Надішлемо візуалізацію і кошторис</li></ol>
 ${notes}
-<p class="small">Якщо локацію знайдете самі: ${g.name}, ${money(g.price)}&nbsp;грн, приїдемо з грою і ведучим.</p>
+<p class="small">Можна замовити тільки гру: приїдемо з ведучим і реквізитом на вашу локацію. Тоді локацію, їжу, декор і фото організовуєте самі.</p>
 <div class="spacer"></div>${tail}</div>`;
     }
     const pairName = r.pair.map(k => GAMES[k].name).join(' + ');
