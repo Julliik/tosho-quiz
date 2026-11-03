@@ -108,7 +108,7 @@ h1:focus,h2:focus{outline:none}
 
 /* Старт */
 .logobar{height:72px;display:flex;align-items:center;justify-content:space-between;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-.logo{width:128px;height:auto}
+.logo{width:160px;height:auto}
 .pola{position:relative;height:290px;margin-left:max(16px,env(safe-area-inset-left,0px));margin-right:max(16px,env(safe-area-inset-right,0px))}
 .pola .a,.pola .b{position:absolute;border:6px solid var(--fg);background:#222;overflow:hidden}
 .pola .a{left:2%;top:12px;width:62%;max-width:240px;aspect-ratio:22/25;transform:rotate(-5deg)}
@@ -395,7 +395,7 @@ function afterBreak(r) {
 }
 const R = {
   start() {
-    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="128" height="44"><span class="sticker tilt-r">9 питань</span></div>
+    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="160" height="39"><span class="sticker tilt-r">9 питань</span></div>
 <div class="pola" aria-hidden="true"><div class="a"><img src="img/start-a.webp" alt=""></div><div class="b"><img src="img/start-b.webp" alt=""></div><span class="ten">10+</span></div>
 <div class="body">
 <h1 tabindex="-1">Побачте <span class="gold">свято</span> до того, як воно почнеться</h1>
@@ -482,7 +482,7 @@ ${r.teaser ? `<button class="teaser" data-act="teaser"><span class="s">Хоче�
 </form></div>`;
   },
   thanks() {
-    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="128" height="44"></div>
+    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="160" height="39"></div>
 <div class="body"><h2 tabindex="-1">Дякуємо, ${esc(F.name)}</h2>
 <p class="lead">${thanksText()}</p>
 <p class="small">Візуалізацію і кошторис надішлемо того ж вечора або наступного дня після розмови.</p>
@@ -493,7 +493,7 @@ ${reviewsBlock()}
 </div>`;
   },
   under8() {
-    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="128" height="44"></div>
+    return `<div class="logobar"><img class="logo" src="img/logo.svg" alt="ТОШО!? івент" width="160" height="39"></div>
 <div class="body"><h2 tabindex="-1">Поки рано</h2>
 <p class="lead">Дякуємо, що зазирнули. Наші ігри написані для підлітків від 10 років. Будемо раді познайомитися, коли іменинник трохи підросте.</p>
 <div class="spacer"></div>
