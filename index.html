@@ -448,7 +448,8 @@ ${optBtn('format', 'unsure', 'Ще не вирішили', 'Порадимо п�
       return `${topBar()}<div class="body">
 <div class="banner"><img src="img/turnkey-wide.webp" alt="Декорований зал ТОШО!?"><span class="sticker tilt-l">вам підходить</span></div>
 <h2 tabindex="-1">Свято під ключ</h2>
-<div class="price"><span class="dim">від</span><b>${money(TURNKEY_FROM)}</b><span class="cur">грн</span></div>
+<div class="price"><span class="dim">повний пакет від</span><b>${money(TURNKEY_FROM)}</b><span class="cur">грн</span></div>
+${A.budget === 'B80' ? `<p class="downsell">Під ключ можна вкластися і у ваш бюджет: без фотографа, без декору або на локації без кейтерингу. Менеджер покаже, що вийде за вашу суму.</p>` : ''}
 <p class="lead">Беремо на себе все: концепцію, підбір локації, кейтеринг і торт, декор і фотозону, фото й відео, програму і координацію в день свята. Підрядникам ви платите ті самі ціни, що й напряму, тільки все через нас.</p>
 <div class="card prog"><img src="img/${g.img}.webp" alt=""><div class="tx"><span class="lbl">Програма всередині</span><span class="nm">${g.name}</span><span class="s">${g.about}</span>${afterBreak(r) ? `<span class="s gold">${afterBreak(r)}</span>` : ''}</div></div>
 <ol class="steps"><li><b>1</b>Менеджер напише за 15 хвилин</li><li><b>2</b>Уточнить деталі за 10 хвилин дзвінка</li><li><b>3</b>Надішлемо візуалізацію і кошторис</li></ol>
@@ -458,7 +459,7 @@ ${notes}
     }
     const pairName = r.pair.map(k => GAMES[k].name).join(' + ');
     return `${topBar()}<div class="body">
-${r.downsell ? `<p class="downsell">Свято під ключ починається від ${money(TURNKEY_FROM)}&nbsp;грн. У вашому бюджеті радимо гру з ведучим на вашій локації.</p>` : ''}
+${r.downsell ? `<p class="downsell">Повний пакет під ключ коштує від ${money(TURNKEY_FROM)}&nbsp;грн. У вашому бюджеті радимо гру з ведучим на вашій локації.</p>` : ''}
 <div class="banner"><img src="img/${g.img}-wide.webp" alt="Гра ${esc(g.name)}"><span class="sticker tilt-l">радимо</span></div>
 <h2 tabindex="-1">${g.name}</h2>
 <div class="price"><b>${money(g.price)}</b><span class="cur">грн</span><span class="dim">· 1,5 години</span>${g.hit ? '<span class="sticker tilt-r">Хіт</span>' : ''}</div>
@@ -466,7 +467,7 @@ ${r.downsell ? `<p class="downsell">Свято під ключ починаєт�
 ${secondPart(r, g, pairName)}
 <p class="small">У ціні команда, реквізит і дорога в межах Києва. Дату закріплюємо після передоплати 30%.</p>
 ${notes}
-${r.teaser ? `<button class="teaser" data-act="teaser"><span class="s">Хочете, щоб локацію, декор і фото взяли на себе ми? Свято під ключ від ${money(TURNKEY_FROM)}&nbsp;грн.</span><span class="go">Подивитися</span></button>` : ''}
+${r.teaser ? `<button class="teaser" data-act="teaser"><span class="s">Хочете, щоб локацію, декор і фото взяли на себе ми? Свято під ключ, повний пакет від ${money(TURNKEY_FROM)}&nbsp;грн.</span><span class="go">Подивитися</span></button>` : ''}
 <div class="spacer"></div>${tail}</div>`;
   },
   form() {
@@ -657,6 +658,7 @@ function payload() {
   const flags = [];
   if (r.type === 'turnkey') flags.push('ПІД КЛЮЧ');
   if (r.downsell) flags.push('хотіли під ключ');
+  if (r.type === 'turnkey' && A.budget === 'B80') flags.push('бюджет 40–80 тис.: підібрати склад');
   const fbc = cookie('_fbc') || (FBCLID ? `fb.1.${Date.now()}.${FBCLID}` : '');
   return {
     eventId: 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
